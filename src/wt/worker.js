@@ -1,6 +1,17 @@
-// n should be received from main thread
-export const nthFibonacci = (n) => n < 2 ? n : nthFibonacci(n - 1) + nthFibonacci(n - 2);
+import {workerData, BroadcastChannel} from 'worker_threads';
+const broadcast = new BroadcastChannel('fibonacci');
 
+export const nthFibonacci = (num) =>{
+    if(num < 2){
+        return num
+    }else{
+        return nthFibonacci(num - 1) + nthFibonacci(num - 2);
+    }
+}
+  
 export const sendResult = () => {
-    // This function sends result of nthFibonacci computations to main thread
+  broadcast.postMessage({ status: 'resolved', data: nthFibonacci(workerData) });
+  broadcast.close();
 };
+
+sendResult();
